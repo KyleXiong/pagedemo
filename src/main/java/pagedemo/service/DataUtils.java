@@ -25,18 +25,29 @@ public class DataUtils {
 	private static String URL = "jdbc:mysql://localhost:3306/pagedemo";
 	private static String NAME = "root";
 	private static String PASSWORD = "root";
-
+    
+	private static Connection conn = null;
+	
+	static 
+	{
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+				conn = DriverManager.getConnection(URL, NAME, PASSWORD);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	}
+	
 	public static List<User> getUsers(int page) {
 
 		String sql = "select * from users limit ?,?";
-		Connection conn = null;
 		//Statement stat = null;
 		PreparedStatement ps = null;
 		ResultSet result = null;
 		List<User> users = new ArrayList<User>();
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(URL, NAME, PASSWORD);
 			ps = conn.prepareStatement(sql);
 			ps.setInt(1, (page-1)*PAGE_SIZE);
 			ps.setInt(2, PAGE_SIZE);
@@ -64,8 +75,6 @@ public class DataUtils {
 				System.out.println("email: " + result.getString(8));
 				System.out.println("cellphone: " + result.getString(9));
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -79,21 +88,16 @@ public class DataUtils {
 
 	public static int getUsersCount() {
 		String sql = "select count(*) from users";
-		Connection conn = null;
 		Statement stat = null;
 		ResultSet result = null;
 		int count = 0;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(URL, NAME, PASSWORD);
 			stat = conn.createStatement();
 			result = stat.executeQuery(sql);
 
 			while (result.next()) {
                count = result.getInt(1);
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
